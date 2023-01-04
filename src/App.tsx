@@ -1,11 +1,15 @@
-import './App.css'
+import './styles/App.css'
+import './styles/DateTimePicker.css'
+import './styles/Calendar.css'
+import './styles/Clock.css'
 import { useState } from 'react'
 import {
   useSession,
   useSupabaseClient,
   useSessionContext
 } from '@supabase/auth-helpers-react'
-import DateTimePicker from 'react-datetime-picker'
+import DateTimePicker from 'react-datetime-picker/dist/entry.nostyle'
+import { Button, TextInput } from '@mouravocal/react'
 
 function App() {
   const session = useSession()
@@ -79,13 +83,19 @@ function App() {
   return (
     <div className="App">
       <div className="container">
+        <h1>Google Calendar Event Creation</h1>
         {session ? (
           <>
-            <h1> Hey there {session.user.email}</h1>
+            <div className="header">
+              <h3> Hi there, {session.user.user_metadata.full_name}</h3>
+              <Button variant="secondary" onClick={signOut}>
+                Sign out
+              </Button>
+            </div>
 
             <div>
               <h2>Event name</h2>
-              <input
+              <TextInput
                 type="text"
                 onChange={e => setEventName(e.target.value)}
                 value={eventName}
@@ -94,7 +104,7 @@ function App() {
             </div>
             <div>
               <h2>Event description</h2>
-              <input
+              <TextInput
                 type="text"
                 onChange={e => setEventDescription(e.target.value)}
                 value={eventDescription}
@@ -106,7 +116,7 @@ function App() {
               <DateTimePicker
                 value={startDate}
                 onChange={setStartDate}
-                format="dd-MMM-y h:mm:ss a"
+                format="dd MMM y h:mm a"
               />
             </div>
 
@@ -115,19 +125,25 @@ function App() {
               <DateTimePicker
                 value={endDate}
                 onChange={setEndDate}
-                format="dd-MMM-y h:mm:ss a"
+                format="dd MMM y h:mm a"
               />
             </div>
-            <hr />
-            <button onClick={createGoogleCalendarEvent}>
-              Create Calendar Event
-            </button>
-            <hr />
-            <button onClick={signOut}>Sign out</button>
+            <div className="divider">
+              <hr />
+            </div>
+
+            <div className="buttonContainer">
+              <Button onClick={createGoogleCalendarEvent}>
+                Create Calendar Event
+              </Button>
+            </div>
           </>
         ) : (
           <>
-            <button onClick={signInWithGoogle}>Sign in with Google</button>
+            <h2>Please login with your google account</h2>
+            <div className="buttonContainer">
+              <Button onClick={signInWithGoogle}>Sign in with Google</Button>
+            </div>
           </>
         )}
       </div>
