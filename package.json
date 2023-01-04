@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "homepage": "https://<username>.github.io/<repo>/",
+  "homepage": "https://mouravocal.github.io/google-calendar-api-test/",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
