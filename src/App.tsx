@@ -37,7 +37,44 @@ function App() {
     await supabase.auth.signOut()
   }
 
-  console.log(session)
+  const createGoogleCalendarEvent = async () => {
+    const body = {
+      summary: eventName,
+      description: eventDescription,
+      start: {
+        dateTime: startDate.toISOString(),
+        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone
+      },
+      end: {
+        dateTime: endDate.toISOString(),
+        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone
+      }
+    }
+
+    await fetch(
+      'https://www.googleapis.com/calendar/v3/calendars/primary/events',
+      {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${session?.provider_token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(body)
+      }
+    )
+      .then(data => {
+        return data.json()
+      })
+      .then(data => {
+        console.log(data)
+
+        if (data.error) return alert('Houve um erro ao registrar')
+
+        alert('Event created successfully, check your Google Calendar')
+        setEventName('')
+        setEventDescription('')
+      })
+  }
 
   return (
     <div className="App">
@@ -48,26 +85,44 @@ function App() {
 
             <div>
               <h2>Event name</h2>
-              <input type="text" name="eventName" id="eventName" />
+              <input
+                type="text"
+                onChange={e => setEventName(e.target.value)}
+                value={eventName}
+                autoFocus
+              />
             </div>
             <div>
               <h2>Event description</h2>
               <input
                 type="text"
-                name="eventDescription"
-                id="eventDescription"
+                onChange={e => setEventDescription(e.target.value)}
+                value={eventDescription}
               />
             </div>
 
             <div>
               <h2>Event starts at</h2>
-              <DateTimePicker value={startDate} onChange={setStartDate} />
+              <DateTimePicker
+                value={startDate}
+                onChange={setStartDate}
+                format="dd-MMM-y h:mm:ss a"
+              />
             </div>
 
             <div>
               <h2>Event ends at</h2>
-              <DateTimePicker value={endDate} onChange={setEndDate} />
+              <DateTimePicker
+                value={endDate}
+                onChange={setEndDate}
+                format="dd-MMM-y h:mm:ss a"
+              />
             </div>
+            <hr />
+            <button onClick={createGoogleCalendarEvent}>
+              Create Calendar Event
+            </button>
+            <hr />
             <button onClick={signOut}>Sign out</button>
           </>
         ) : (
